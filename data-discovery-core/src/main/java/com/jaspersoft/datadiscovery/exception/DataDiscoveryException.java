@@ -1,4 +1,4 @@
-package com.jaspersoft.data_discovery.exception;
+package com.jaspersoft.datadiscovery.exception;
 
 /**
  * Created by serhii.blazhyievskyi on 9/2/2015.

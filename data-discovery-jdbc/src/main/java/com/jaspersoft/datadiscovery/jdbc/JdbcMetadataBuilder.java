@@ -18,18 +18,15 @@
 * You should have received a copy of the GNU Affero General Public  License
 * along with this program.&nbsp; If not, see <http://www.gnu.org/licenses/>.
 */
-package com.jaspersoft.data_discovery.jdbc;
+package com.jaspersoft.datadiscovery.jdbc;
 
-import com.jaspersoft.data_discovery.MetadataBuilder;
-import com.jaspersoft.data_discovery.dto.MetadataElementItem;
-import com.jaspersoft.data_discovery.dto.MetadataGroupItem;
-import com.jaspersoft.data_discovery.dto.MetadataItem;
-import com.jaspersoft.data_discovery.exception.DataDiscoveryException;
+import com.jaspersoft.datadiscovery.MetadataBuilder;
+import com.jaspersoft.datadiscovery.dto.MetadataElementItem;
+import com.jaspersoft.datadiscovery.dto.MetadataGroupItem;
+import com.jaspersoft.datadiscovery.dto.MetadataItem;
+import com.jaspersoft.datadiscovery.exception.DataDiscoveryException;
 
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,7 +41,7 @@ import java.util.Set;
  *
  * @author Yaroslav.Kovalchyk
  */
-public class JdbcMetadataBuilder implements MetadataBuilder<JdbcConnectionContainer> {
+public class JdbcMetadataBuilder implements MetadataBuilder<Connection> {
     private static final Map<Integer, String> JDBC_TYPES_BY_CODE = Collections.unmodifiableMap(new HashMap<Integer, String>() {{
         put(Types.BIGINT, "java.lang.Long");
         put(Types.BIT, "java.lang.Boolean");
@@ -71,13 +68,13 @@ public class JdbcMetadataBuilder implements MetadataBuilder<JdbcConnectionContai
     }});
 
     @Override
-    public MetadataItem build(JdbcConnectionContainer connection, Map<String, String[]> options) {
+    public MetadataItem build(Connection connection, Map<String, String[]> options) {
         final String[] expands = options != null ? options.get("expand") : null;
         final String[] includes = options != null ? options.get("include") : null;
         final String[] recursives = options != null ? options.get("recursive") : null;
         List<MetadataItem> items;
         try {
-            final DatabaseMetaData metaData = connection.getConnection().getMetaData();
+            final DatabaseMetaData metaData = connection.getMetaData();
             if(recursives != null && recursives.length > 0) {
                 final Map<String, List<String[]>> recursiveMap = new HashMap<String, List<String[]>>();
                 for (String recursive : recursives) {

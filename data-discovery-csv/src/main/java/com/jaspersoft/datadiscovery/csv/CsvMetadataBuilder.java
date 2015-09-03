@@ -18,13 +18,13 @@
 * You should have received a copy of the GNU Affero General Public  License
 * along with this program.&nbsp; If not, see <http://www.gnu.org/licenses/>.
 */
-package com.jaspersoft.data_discovery.csv;
+package com.jaspersoft.datadiscovery.csv;
 
-import com.jaspersoft.data_discovery.MetadataBuilder;
-import com.jaspersoft.data_discovery.dto.MetadataElementItem;
-import com.jaspersoft.data_discovery.dto.MetadataGroupItem;
-import com.jaspersoft.data_discovery.dto.MetadataItem;
-import com.jaspersoft.data_discovery.exception.DataDiscoveryException;
+import com.jaspersoft.datadiscovery.MetadataBuilder;
+import com.jaspersoft.datadiscovery.dto.MetadataElementItem;
+import com.jaspersoft.datadiscovery.dto.MetadataGroupItem;
+import com.jaspersoft.datadiscovery.dto.MetadataItem;
+import com.jaspersoft.datadiscovery.exception.DataDiscoveryException;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRCsvDataSource;
 

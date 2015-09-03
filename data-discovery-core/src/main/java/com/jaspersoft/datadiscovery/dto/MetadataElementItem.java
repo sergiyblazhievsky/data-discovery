@@ -18,7 +18,7 @@
 * You should have received a copy of the GNU Affero General Public  License
 * along with this program.&nbsp; If not, see <http://www.gnu.org/licenses/>.
 */
-package com.jaspersoft.data_discovery.dto;
+package com.jaspersoft.datadiscovery.dto;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
