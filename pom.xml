@@ -4,13 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.jaspersoft.data-discovery</groupId>
-    <artifactId>data-discovery</artifactId>
+    <groupId>com.jaspersoft.datadiscovery</groupId>
+    <artifactId>datadiscovery</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>data-discovery-core</module>
-        <module>data-discovery-csv</module>
-        <module>data-discovery-jdbc</module>
+        <module>datadiscovery-core</module>
+        <module>datadiscovery-csv</module>
+        <module>datadiscovery-jdbc</module>
     </modules>
 </project>
