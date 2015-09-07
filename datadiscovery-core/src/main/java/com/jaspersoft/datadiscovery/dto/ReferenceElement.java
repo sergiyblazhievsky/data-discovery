@@ -20,56 +20,41 @@
 */
 package com.jaspersoft.datadiscovery.dto;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * <p></p>
  *
  * @author Yaroslav.Kovalchyk
+ * @version $Id$
  */
-@XmlRootElement(name = "group")
-public class MetadataGroupItem extends MetadataItem<MetadataGroupItem> {
-    private List<MetadataItem> items;
+public class ReferenceElement extends SchemaElement<ReferenceElement> {
+    private String referencePath;
 
-    public MetadataGroupItem(){
-        super();
-    }
+    public ReferenceElement(){}
 
-    public MetadataGroupItem(MetadataGroupItem source){
+    public ReferenceElement(ReferenceElement source){
         super(source);
-        if(source.getItems() != null){
-            items = new ArrayList<MetadataItem>(source.getItems());
-        }
+        referencePath = source.getReferencePath();
     }
 
-    public List<MetadataItem> getItems() {
-        return items;
+    public String getReferencePath() {
+        return referencePath;
     }
 
-    public MetadataGroupItem setItems(List<MetadataItem> items) {
-        this.items = items;
-        return this;
-    }
-
-    public MetadataGroupItem addItem(MetadataItem item){
-        if(items == null){
-            items = new ArrayList<MetadataItem>();
-        }
-        items.add(item);
+    public ReferenceElement setReferencePath(String referencePath) {
+        this.referencePath = referencePath;
         return this;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof MetadataGroupItem)) return false;
+        if (!(o instanceof ReferenceElement)) return false;
         if (!super.equals(o)) return false;
 
-        MetadataGroupItem that = (MetadataGroupItem) o;
+        ReferenceElement that = (ReferenceElement) o;
 
-        if (items != null ? !items.equals(that.items) : that.items != null) return false;
+        if (referencePath != null ? !referencePath.equals(that.referencePath) : that.referencePath != null)
+            return false;
 
         return true;
     }
@@ -77,14 +62,14 @@ public class MetadataGroupItem extends MetadataItem<MetadataGroupItem> {
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + (items != null ? items.hashCode() : 0);
+        result = 31 * result + (referencePath != null ? referencePath.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        return "MetadataGroupItem{" +
-                "items=" + items +
+        return "ReferenceElement{" +
+                "referencePath='" + referencePath + '\'' +
                 "} " + super.toString();
     }
 }

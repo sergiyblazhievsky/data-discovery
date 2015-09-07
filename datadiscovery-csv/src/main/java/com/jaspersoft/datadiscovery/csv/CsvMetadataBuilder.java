@@ -21,13 +21,15 @@
 package com.jaspersoft.datadiscovery.csv;
 
 import com.jaspersoft.datadiscovery.MetadataBuilder;
-import com.jaspersoft.datadiscovery.dto.MetadataElementItem;
-import com.jaspersoft.datadiscovery.dto.MetadataGroupItem;
-import com.jaspersoft.datadiscovery.dto.MetadataItem;
+import com.jaspersoft.datadiscovery.dto.ResourceGroupElement;
+import com.jaspersoft.datadiscovery.dto.ResourceMetadataSingleElement;
+import com.jaspersoft.datadiscovery.dto.SchemaElement;
 import com.jaspersoft.datadiscovery.exception.DataDiscoveryException;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRCsvDataSource;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,7 +40,7 @@ import java.util.Set;
  */
 public class CsvMetadataBuilder implements MetadataBuilder<JRCsvDataSource> {
     @Override
-    public MetadataItem build(JRCsvDataSource connection, Map<String, String[]> options) {
+    public SchemaElement build(JRCsvDataSource connection, Map<String, String[]> options) {
         Map<String, Integer> columnNamesMap = connection.getColumnNames();
         if(columnNamesMap.isEmpty()){
             try {
@@ -49,10 +51,12 @@ public class CsvMetadataBuilder implements MetadataBuilder<JRCsvDataSource> {
             }
         }
         final Set<String> columnNames = columnNamesMap.keySet();
-        MetadataGroupItem group = new MetadataGroupItem().setName("root");
+        ResourceGroupElement group = new ResourceGroupElement<ResourceGroupElement>().setName("root");
+        List<SchemaElement> items = new ArrayList<SchemaElement>();
         for (String columnName : columnNames) {
-            group.addItem(new MetadataElementItem().setName(columnName).setType(String.class.getName()));
+            items.add(new ResourceMetadataSingleElement().setName(columnName).setType(String.class.getName()));
         }
+        group.setElements(items);
         return group;
     }
 }

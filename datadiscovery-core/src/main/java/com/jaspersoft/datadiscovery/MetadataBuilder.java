@@ -20,7 +20,7 @@
 */
 package com.jaspersoft.datadiscovery;
 
-import com.jaspersoft.datadiscovery.dto.MetadataItem;
+import com.jaspersoft.datadiscovery.dto.SchemaElement;
 
 import java.util.Map;
 
@@ -30,5 +30,5 @@ import java.util.Map;
  * @author Yaroslav.Kovalchyk
  */
 public interface MetadataBuilder<C> {
-    MetadataItem build(C connection, Map<String, String[]> options);
+    SchemaElement build(C connection, Map<String, String[]> options);
 }
