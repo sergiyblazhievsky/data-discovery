@@ -20,7 +20,7 @@
 */
 package com.jaspersoft.datadiscovery.csv;
 
-import com.jaspersoft.datadiscovery.MetadataBuilder;
+import com.jaspersoft.datadiscovery.MetadataProvider;
 import com.jaspersoft.datadiscovery.dto.ResourceGroupElement;
 import com.jaspersoft.datadiscovery.dto.ResourceMetadataSingleElement;
 import com.jaspersoft.datadiscovery.dto.SchemaElement;
@@ -38,7 +38,7 @@ import java.util.Set;
  *
  * @author Yaroslav.Kovalchyk
  */
-public class CsvMetadataBuilder implements MetadataBuilder<JRCsvDataSource> {
+public class CsvMetadataProvider implements MetadataProvider<JRCsvDataSource> {
     @Override
     public SchemaElement build(JRCsvDataSource connection, Map<String, String[]> options) {
         Map<String, Integer> columnNamesMap = connection.getColumnNames();

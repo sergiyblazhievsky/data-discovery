@@ -29,6 +29,6 @@ import java.util.Map;
  *
  * @author Yaroslav.Kovalchyk
  */
-public interface MetadataBuilder<C> {
+public interface MetadataProvider<C> {
     SchemaElement build(C connection, Map<String, String[]> options);
 }

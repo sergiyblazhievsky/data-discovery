@@ -20,7 +20,7 @@
 */
 package com.jaspersoft.datadiscovery.jdbc;
 
-import com.jaspersoft.datadiscovery.MetadataBuilder;
+import com.jaspersoft.datadiscovery.MetadataProvider;
 import com.jaspersoft.datadiscovery.dto.ResourceGroupElement;
 import com.jaspersoft.datadiscovery.dto.ResourceMetadataSingleElement;
 import com.jaspersoft.datadiscovery.dto.SchemaElement;
@@ -48,7 +48,7 @@ import java.util.Set;
  * @version $Id$
  */
 @Service
-public class JdbcMetadataBuilder implements MetadataBuilder<Connection> {
+public class JdbcMetadataProvider implements MetadataProvider<Connection> {
     private static final Map<Integer, String> JDBC_TYPES_BY_CODE = Collections.unmodifiableMap(new HashMap<Integer, String>() {{
         put(Types.BIGINT, "java.lang.Long");
         put(Types.BIT, "java.lang.Boolean");
