@@ -20,6 +20,7 @@
 */
 package com.jaspersoft.datadiscovery.jdbc;
 
+import com.jaspersoft.datadiscovery.MetadataBuilder;
 import com.jaspersoft.datadiscovery.dto.ResourceGroupElement;
 import com.jaspersoft.datadiscovery.dto.ResourceMetadataSingleElement;
 import com.jaspersoft.datadiscovery.dto.SchemaElement;
@@ -47,7 +48,7 @@ import java.util.Set;
  * @version $Id$
  */
 @Service
-public class JdbcMetadataBuilder {
+public class JdbcMetadataBuilder implements MetadataBuilder<Connection> {
     private static final Map<Integer, String> JDBC_TYPES_BY_CODE = Collections.unmodifiableMap(new HashMap<Integer, String>() {{
         put(Types.BIGINT, "java.lang.Long");
         put(Types.BIT, "java.lang.Boolean");
@@ -73,12 +74,24 @@ public class JdbcMetadataBuilder {
         put(Types.NVARCHAR, "java.lang.String");
     }});
 
+    @Override
     public SchemaElement build(Connection connection, Map<String, String[]> options) {
         final String[] expands = options != null ? options.get("expand") : null;
         final String[] includes = options != null ? options.get("include") : null;
+        final String[] recursives = options != null ? options.get("recursive") : null;
         List<SchemaElement> items;
         try {
             final DatabaseMetaData metaData = connection.getMetaData();
+            if(recursives != null && recursives.length > 0) {
+                final Map<String, List<String[]>> recursiveMap = new HashMap<String, List<String[]>>();
+                for (String recursive : recursives) {
+                    if (recursive != null) {
+                        final String[] path = recursive.split("\\.");
+                        recursiveMap.put(path[0], null);
+                    }
+                }
+                items = expandMetadata(recursiveMap, metaData);
+            }
             if (includes != null && includes.length > 0) {
                 items = includeMetadata(includes, metaData);
             } else {
@@ -109,10 +122,13 @@ public class JdbcMetadataBuilder {
         final ResultSet schemas = metaData.getSchemas();
         while (schemas.next()) {
             String schema = schemas.getString("TABLE_SCHEM");
-            result.add(getSchemaMetadata(schema, expandsMap.get(schema), metaData));
+            if(expandsMap != null) {
+                result.add(getSchemaMetadata(schema, expandsMap.get(schema), metaData));
+            } else {
+                result.add(getSchemaMetadata(schema, null, metaData));
+            }
         }
         return result;
-
     }
 
     protected List<SchemaElement> includeMetadata(String[] includes, DatabaseMetaData metaData) {
@@ -137,8 +153,10 @@ public class JdbcMetadataBuilder {
         final List<SchemaElement> tableItems = expand != null ? new ArrayList<SchemaElement>() : null;
         if (tableItems != null) {
             final Set<String> tableNamesToExpand = new HashSet<String>();
-            for (String[] strings : expand) {
-                tableNamesToExpand.add(strings[0]);
+            if (expand != null) {
+                for (String[] strings : expand) {
+                    tableNamesToExpand.add(strings[0]);
+                }
             }
             try {
                 final ResultSet tables = metaData.getTables(null, schema, null, new String[]{"TABLE", "VIEW", "ALIAS", "SYNONYM"});
@@ -150,7 +168,13 @@ public class JdbcMetadataBuilder {
                 throw new DataDiscoveryException(e);
             }
         }
-        return new ResourceGroupElement<ResourceGroupElement>().setName(schema).setElements(tableItems);
+        ResourceGroupElement result = (ResourceGroupElement)new ResourceGroupElement().setName(schema);
+        if(tableItems.size() > 0) {
+            result = result.setElements(tableItems);
+        } else {
+            result = result.setElements(null);
+        }
+        return result;
     }
 
     protected SchemaElement getTableMetadata(String schema, String table, boolean expand, DatabaseMetaData metaData) {
