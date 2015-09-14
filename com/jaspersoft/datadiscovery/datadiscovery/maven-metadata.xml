@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.jaspersoft.datadiscovery</groupId>
+  <artifactId>datadiscovery</artifactId>
+  <versioning>
+    <versions>
+      <version>0.1.0-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20150914071618</lastUpdated>
+  </versioning>
+</metadata>
