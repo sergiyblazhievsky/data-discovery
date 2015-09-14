@@ -74,7 +74,6 @@ public class JdbcMetadataProvider implements MetadataProvider<Connection> {
         put(Types.NVARCHAR, "java.lang.String");
     }});
 
-    @Override
     public SchemaElement build(Connection connection, Map<String, String[]> options) {
         final String[] expands = options != null ? options.get("expand") : null;
         final String[] includes = options != null ? options.get("include") : null;
@@ -150,13 +149,11 @@ public class JdbcMetadataProvider implements MetadataProvider<Connection> {
     }
 
     protected SchemaElement getSchemaMetadata(String schema, List<String[]> expand, DatabaseMetaData metaData) {
-        final List<SchemaElement> tableItems = expand != null ? new ArrayList<SchemaElement>() : null;
-        if (tableItems != null) {
+        final List<SchemaElement> tableItems = new ArrayList<SchemaElement>();
+        if (expand != null) {
             final Set<String> tableNamesToExpand = new HashSet<String>();
-            if (expand != null) {
-                for (String[] strings : expand) {
-                    tableNamesToExpand.add(strings[0]);
-                }
+            for (String[] strings : expand) {
+                tableNamesToExpand.add(strings[0]);
             }
             try {
                 final ResultSet tables = metaData.getTables(null, schema, null, new String[]{"TABLE", "VIEW", "ALIAS", "SYNONYM"});
