@@ -78,21 +78,22 @@ public class JdbcMetadataProvider implements MetadataProvider<Connection> {
         final String[] expands = options != null ? options.get("expand") : null;
         final String[] includes = options != null ? options.get("include") : null;
         final String[] recursives = options != null ? options.get("recursive") : null;
-        List<SchemaElement> items;
+        List<SchemaElement> items = new ArrayList<SchemaElement>();
         try {
             final DatabaseMetaData metaData = connection.getMetaData();
-            if(recursives != null && recursives.length > 0) {
-                final Map<String, List<String[]>> recursiveMap = new HashMap<String, List<String[]>>();
-                for (String recursive : recursives) {
-                    if (recursive != null) {
-                        final String[] path = recursive.split("\\.");
-                        recursiveMap.put(path[0], null);
+            if (recursives != null && recursives.length > 0) {
+                items.addAll(includeMetadata(recursives, metaData));
+                for(SchemaElement item : items) {
+                    List<SchemaElement> innerItems = ((ResourceGroupElement)item).getElements();
+                    for(SchemaElement innerItem : innerItems) {
+                        List<SchemaElement> subItems = ((ResourceGroupElement)includeMetadata(
+                                new String[]{item.getName() + "/" + innerItem.getName()}, metaData).get(0)).getElements();
+                        ((ResourceGroupElement)innerItem).setElements(subItems);
                     }
                 }
-                items = expandMetadata(recursiveMap, metaData);
             }
             if (includes != null && includes.length > 0) {
-                items = includeMetadata(includes, metaData);
+                items.addAll(includeMetadata(includes, metaData));
             } else {
                 final Map<String, List<String[]>> expandsMap = new HashMap<String, List<String[]>>();
                 if (expands != null) {
@@ -107,21 +108,23 @@ public class JdbcMetadataProvider implements MetadataProvider<Connection> {
                             tokensList.add(Arrays.copyOfRange(tokens, 1, tokens.length));
                         }
                     }
+                    items.addAll(expandMetadata(expandsMap, metaData));
                 }
-                items = expandMetadata(expandsMap, metaData);
             }
         } catch (SQLException e) {
             throw new DataDiscoveryException(e);
         }
-        return items.size() == 1 ? items.get(0) : new ResourceGroupElement<ResourceGroupElement>().setName("root").setElements(items);
+        return items.size() == 1 ? items.get(0) : new ResourceGroupElement<ResourceGroupElement>().setName("root")
+                .setElements(items);
     }
 
-    protected List<SchemaElement> expandMetadata(Map<String, List<String[]>> expandsMap, DatabaseMetaData metaData) throws SQLException {
+    protected List<SchemaElement> expandMetadata(Map<String, List<String[]>> expandsMap, DatabaseMetaData metaData)
+            throws SQLException {
         List<SchemaElement> result = new ArrayList<SchemaElement>();
         final ResultSet schemas = metaData.getSchemas();
         while (schemas.next()) {
             String schema = schemas.getString("TABLE_SCHEM");
-            if(expandsMap != null) {
+            if (expandsMap != null) {
                 result.add(getSchemaMetadata(schema, expandsMap.get(schema), metaData));
             } else {
                 result.add(getSchemaMetadata(schema, null, metaData));
@@ -165,8 +168,8 @@ public class JdbcMetadataProvider implements MetadataProvider<Connection> {
                 throw new DataDiscoveryException(e);
             }
         }
-        ResourceGroupElement result = (ResourceGroupElement)new ResourceGroupElement().setName(schema);
-        if(tableItems.size() > 0) {
+        ResourceGroupElement result = (ResourceGroupElement) new ResourceGroupElement().setName(schema);
+        if (tableItems.size() > 0) {
             result = result.setElements(tableItems);
         } else {
             result = result.setElements(null);
