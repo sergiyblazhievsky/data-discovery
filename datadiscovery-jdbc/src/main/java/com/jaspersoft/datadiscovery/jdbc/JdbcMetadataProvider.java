@@ -82,13 +82,18 @@ public class JdbcMetadataProvider implements MetadataProvider<Connection> {
         try {
             final DatabaseMetaData metaData = connection.getMetaData();
             if (recursives != null && recursives.length > 0) {
-                items.addAll(includeMetadata(recursives, metaData));
-                for(SchemaElement item : items) {
-                    List<SchemaElement> innerItems = ((ResourceGroupElement)item).getElements();
-                    for(SchemaElement innerItem : innerItems) {
-                        List<SchemaElement> subItems = ((ResourceGroupElement)includeMetadata(
-                                new String[]{item.getName() + "/" + innerItem.getName()}, metaData).get(0)).getElements();
-                        ((ResourceGroupElement)innerItem).setElements(subItems);
+                for(String recursive : recursives) {
+                    if("root".equals(recursive)) {
+                        items.addAll(expandMetadata(null, metaData));
+                        for(SchemaElement item : items) {
+                            String[] recursivePath = new String[]{item.getName()};
+                            List<SchemaElement> tables = ((ResourceGroupElement)includeMetadata(recursivePath, metaData).get(0)).getElements();
+                            ((ResourceGroupElement)item).setElements(tables);
+                            fillSchemaElement(items, metaData);
+                        }
+                    } else {
+                        items.addAll(includeMetadata(recursives, metaData));
+                        fillSchemaElement(items, metaData);
                     }
                 }
             }
@@ -116,6 +121,19 @@ public class JdbcMetadataProvider implements MetadataProvider<Connection> {
         }
         return items.size() == 1 ? items.get(0) : new ResourceGroupElement<ResourceGroupElement>().setName("root")
                 .setElements(items);
+    }
+
+    private void fillSchemaElement(List<SchemaElement> items, DatabaseMetaData metaData) {
+        for(SchemaElement item : items) {
+            List<SchemaElement> innerItems = ((ResourceGroupElement)item).getElements();
+            if(innerItems != null) {
+                for(SchemaElement innerItem : innerItems) {
+                    List<SchemaElement> subItems = ((ResourceGroupElement) includeMetadata(
+                            new String[]{item.getName() + "/" + innerItem.getName()}, metaData).get(0)).getElements();
+                    ((ResourceGroupElement) innerItem).setElements(subItems);
+                }
+            }
+        }
     }
 
     protected List<SchemaElement> expandMetadata(Map<String, List<String[]>> expandsMap, DatabaseMetaData metaData)
